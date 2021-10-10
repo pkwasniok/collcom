@@ -6,11 +6,12 @@
     export let isAuthenticated;
     export let onLogIn;
     export let onLogOut;
+    export let onAdd;
 </script>
 
 <div>
     <SearchBar bind:search />
-    <LogButton {isAuthenticated} {onLogIn} {onLogOut} />
+    <LogButton {isAuthenticated} {onLogIn} {onLogOut} {onAdd} />
 </div>
 
 <style>
@@ -20,6 +21,6 @@
         left: 50%;
         width: 100%;
         transform: translateX(-50%);
-        background-color: #aaa;
+        z-index: 1000;
     }
 </style>

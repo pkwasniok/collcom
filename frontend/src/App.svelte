@@ -2,11 +2,15 @@
 	import Header from "./Header.svelte";
 	import LoadingIndicator from "./LoadingIndicator.svelte";
 	import Title from "./Title.svelte";
+	import AddPost from "./AddPost.svelte";
 
 	import auth from "./authService";
 	import { isAuthenticated, user } from "./store";
 	import { onMount } from "svelte";
 	import MessagesBoard from "./MessagesBoard.svelte";
+
+	let newPost = false;
+	let result = null;
 
 	let auth0Client;
 
@@ -27,12 +31,34 @@
 		auth.logout(auth0Client);
 	}
 
-	let institute;
+	let institute = "I";
 	let url = "https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/";
 
 	async function fetch_api(institute) {
 		let data = await fetch(url + institute).then((x) => x.json());
 		return data;
+	}
+
+	async function post_api(title, institute, content) {
+		const body =
+			'{"title": "' +
+			title +
+			'", "institute": "' +
+			institute +
+			'", "description": "' +
+			content +
+			'"}';
+
+		console.log(body);
+
+		const res = await fetch(
+			"https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items",
+			{
+				method: "POST",
+				body: body,
+			}
+		).then((x) => x.json());
+		console.log(res);
 	}
 </script>
 
@@ -41,23 +67,22 @@
 	{isAuthenticated}
 	onLogIn={login}
 	onLogOut={logout}
+	onAdd={() => (newPost = !newPost)}
 />
 
 <Title />
 
-{#await fetch_api(institute)}
-	<LoadingIndicator />
-{:then posts}
-	<MessagesBoard {posts} />
-{:catch error}
-	<span><p>Error while loading data</p></span>
-{/await}
-
-<style>
-	span {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-</style>
+{#if !newPost}
+	{#await fetch_api(institute)}
+		<LoadingIndicator />
+	{:then posts}
+		<MessagesBoard {posts} />
+	{:catch error}
+		<span><p>Error while loading data</p></span>
+	{/await}
+{:else}
+	<AddPost
+		click={(title, content, institute) =>
+			post_api(title, institute, content)}
+	/>
+{/if}
