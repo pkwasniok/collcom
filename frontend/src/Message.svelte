@@ -4,10 +4,10 @@
 
 <div>
     <h2>
-        {content.Title} - <span>{content.Date} by {content.Author}</span>
+        {content.title} - <span>{"NaN"} by {content.institute}</span>
     </h2>
     <hr />
-    <p>{content.Content}</p>
+    <p>{content.description}</p>
 </div>
 
 <style>
