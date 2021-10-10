@@ -1,7 +1,35 @@
 <script>
+	import Header from "./Header.svelte";
+	import LoadingIndicator from "./LoadingIndicator.svelte";
 	import Title from "./Title.svelte";
+	import AddPost from "./AddPost.svelte";
+
+	import auth from "./authService";
+	import { isAuthenticated, user } from "./store";
+	import { onMount } from "svelte";
 	import MessagesBoard from "./MessagesBoard.svelte";
-	import { Stretch } from "svelte-loading-spinners";
+
+	let newPost = false;
+	let result = null;
+
+	let auth0Client;
+
+	onMount(async () => {
+		auth0Client = await auth.createClient();
+
+		isAuthenticated.set(await auth0Client.isAuthenticated());
+		user.set(await auth0Client.getUser());
+
+		console.log(user);
+	});
+
+	function login() {
+		auth.loginWithPopup(auth0Client);
+	}
+
+	function logout() {
+		auth.logout(auth0Client);
+	}
 
 	let institute = "I";
 	let url = "https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/";
@@ -10,37 +38,51 @@
 		let data = await fetch(url + institute).then((x) => x.json());
 		return data;
 	}
+
+	async function post_api(title, institute, content) {
+		const body =
+			'{"title": "' +
+			title +
+			'", "institute": "' +
+			institute +
+			'", "description": "' +
+			content +
+			'"}';
+
+		console.log(body);
+
+		const res = await fetch(
+			"https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items",
+			{
+				method: "POST",
+				body: body,
+			}
+		).then((x) => x.json());
+		console.log(res);
+	}
 </script>
 
-<input bind:value={institute} />
+<Header
+	bind:search={institute}
+	{isAuthenticated}
+	onLogIn={login}
+	onLogOut={logout}
+	onAdd={() => (newPost = !newPost)}
+/>
 
-{#await fetch_api(institute)}
-	<span id="loading-spinner"><Stretch color={"#AAA"} /></span>
-{:then posts}
-	{#if posts.length > 0}
-		<Title new_message_indicator={posts.length > 0} />
+<Title />
+
+{#if !newPost}
+	{#await fetch_api(institute)}
+		<LoadingIndicator />
+	{:then posts}
 		<MessagesBoard {posts} />
-	{:else}
-		<Title new_message_indicator={posts.length > 0} />
-		<p>Can't find institute "{institute}"</p>
-	{/if}
-{:catch error}
-	<p>Error occured: {error}</p>
-{/await}
-
-<style>
-	p {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		font-size: large;
-		transform: translate(-50%, -50%);
-	}
-
-	#loading-spinner {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-</style>
+	{:catch error}
+		<span><p>Error while loading data</p></span>
+	{/await}
+{:else}
+	<AddPost
+		click={(title, content, institute) =>
+			post_api(title, institute, content)}
+	/>
+{/if}

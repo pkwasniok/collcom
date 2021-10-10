@@ -1,4 +1,12 @@
 <script>
+    export let search;
 </script>
 
-<input />
+<input bind:value={search} placeholder="Institute name" />
+
+<style>
+    input {
+        position: fixed;
+        left: 5%;
+    }
+</style>

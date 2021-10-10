@@ -1,22 +1,18 @@
-<script>
-    export let new_message_indicator = false;
-    let status;
-
-    $: if (new_message_indicator == true) {
-        status = "📫";
-    } else {
-        status = "📪";
-    }
-</script>
-
 <div>
-    <h1>Students information system {status}</h1>
+    <h1>CollCom 📫</h1>
 </div>
 
 <style>
     div {
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        width: 100%;
+        top: -10px;
+        text-align: center;
+    }
+
+    @media only screen and (max-width: 700px) {
+        div {
+            top: 35px;
+        }
     }
 </style>
