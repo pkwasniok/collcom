@@ -31,7 +31,7 @@
 		auth.logout(auth0Client);
 	}
 
-	let institute = "I";
+	let institute = "University";
 	let url = "https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/";
 
 	async function fetch_api(institute) {
@@ -40,6 +40,8 @@
 	}
 
 	async function post_api(title, institute, content) {
+		newPost = false;
+
 		const body =
 			'{"title": "' +
 			title +
