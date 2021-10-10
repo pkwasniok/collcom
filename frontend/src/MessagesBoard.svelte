@@ -18,10 +18,21 @@
 <style>
     div {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50%;
-        height: 70%;
+        transform: translateX(-50%);
+        width: 70%;
+        top: 10%;
+    }
+
+    @media only screen and (max-width: 900px) {
+        div {
+            width: 95%;
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        div {
+            width: 100%;
+        }
     }
 </style>

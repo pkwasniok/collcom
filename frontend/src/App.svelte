@@ -1,9 +1,33 @@
 <script>
+	import Header from "./Header.svelte";
+	import LoadingIndicator from "./LoadingIndicator.svelte";
 	import Title from "./Title.svelte";
-	import MessagesBoard from "./MessagesBoard.svelte";
-	import { Stretch } from "svelte-loading-spinners";
 
-	let institute = "I";
+	import auth from "./authService";
+	import { isAuthenticated, user } from "./store";
+	import { onMount } from "svelte";
+	import MessagesBoard from "./MessagesBoard.svelte";
+
+	let auth0Client;
+
+	onMount(async () => {
+		auth0Client = await auth.createClient();
+
+		isAuthenticated.set(await auth0Client.isAuthenticated());
+		user.set(await auth0Client.getUser());
+
+		console.log(user);
+	});
+
+	function login() {
+		auth.loginWithPopup(auth0Client);
+	}
+
+	function logout() {
+		auth.logout(auth0Client);
+	}
+
+	let institute;
 	let url = "https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/";
 
 	async function fetch_api(institute) {
@@ -12,32 +36,25 @@
 	}
 </script>
 
-<input bind:value={institute} />
+<Header
+	bind:search={institute}
+	{isAuthenticated}
+	onLogIn={login}
+	onLogOut={logout}
+/>
+
+<Title />
 
 {#await fetch_api(institute)}
-	<span id="loading-spinner"><Stretch color={"#AAA"} /></span>
+	<LoadingIndicator />
 {:then posts}
-	{#if posts.length > 0}
-		<Title new_message_indicator={posts.length > 0} />
-		<MessagesBoard {posts} />
-	{:else}
-		<Title new_message_indicator={posts.length > 0} />
-		<p>Can't find institute "{institute}"</p>
-	{/if}
+	<MessagesBoard {posts} />
 {:catch error}
-	<p>Error occured: {error}</p>
+	<span><p>Error while loading data</p></span>
 {/await}
 
 <style>
-	p {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		font-size: large;
-		transform: translate(-50%, -50%);
-	}
-
-	#loading-spinner {
+	span {
 		position: absolute;
 		top: 50%;
 		left: 50%;
