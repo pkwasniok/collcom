@@ -1,13 +1,14 @@
 <script>
     import Message from "./Message.svelte";
 
-    export let messages;
+    export let posts;
+    export let institute;
 </script>
 
 <div>
-    {#if messages.length > 0}
-        {#each messages as message}
-            <Message content={message} />
+    {#if posts.length > 0}
+        {#each posts as post}
+            <Message content={post} />
         {/each}
     {:else}
         No new messages

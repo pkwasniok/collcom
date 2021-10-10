@@ -4,7 +4,7 @@
 
 <div>
     <h2>
-        {content.title} - <span>{"NaN"} by {content.institute}</span>
+        {content.title} - <span>by {content.institute}</span>
     </h2>
     <hr />
     <p>{content.description}</p>

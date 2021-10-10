@@ -1,27 +1,21 @@
 <script>
 	import Title from "./Title.svelte";
 	import MessagesBoard from "./MessagesBoard.svelte";
-	import { dataset_dev } from "svelte/internal";
-	import Message from "./Message.svelte";
+	import { onMount } from "svelte";
 
-	let test = false;
+	let search = null;
 
-	const fetchImage = (async () => {
-		const response = await fetch(
-			"http://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/I",
-			{ mode: "no-cors" }
-		);
-		console.log(response);
-		return await response;
-	})();
+	async function fetch_api(url) {
+		let data = await fetch(url).then((x) => x.json());
+		return data;
+	}
 </script>
 
-{#await fetchImage}
-	<p>Loading data...</p>
-{:then messages}
-	<!--<Title new_message_indicator={messages.length > 0} />-->
-	<!--<MessagesBoard {messages} />-->
-	<p>{messages}</p>
+{#await fetch_api("https://lwraym5r2h.execute-api.ap-south-1.amazonaws.com/items/" + "I")}
+	<p>Fetching data</p>
+{:then posts}
+	<Title new_message_indicator={posts.length > 0} />
+	<MessagesBoard {posts} />
 {:catch error}
-	<p>An error occured during loading messages: {error}</p>
+	<p>Error occured: {error}</p>
 {/await}
